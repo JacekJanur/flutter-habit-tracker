@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:habit/components/enter-habit-name.dart';
+import 'package:habit/components/alert-box.dart';
 import 'package:habit/components/floating_button.dart';
 import 'package:habit/components/habit_tile.dart';
 
@@ -29,10 +29,10 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) {
-        return EnterHabitName(
+        return AlertBox(
           controller: _newHabitNameController,
           onSave: saveNewHabit,
-          onCancel: cancelNewHabit,
+          onCancel: cancelAlertBox,
         );
       },
     );
@@ -43,11 +43,31 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         todaysHabitList.add([_newHabitNameController.text, false]);
       });
+      cancelAlertBox();
+  }
+
+  void cancelAlertBox(){
+    _newHabitNameController.clear();
       Navigator.of(context).pop();
   }
 
-  void cancelNewHabit(){
-      Navigator.of(context).pop();
+  void openHabitSetting(int index){
+    showDialog(context: context, builder: (context){
+      return AlertBox(controller: _newHabitNameController, onSave: () => saveExistingHabit(index), onCancel: cancelAlertBox);
+    });
+  }
+
+  void deleteHabit(int index){
+    setState(() {
+      todaysHabitList.removeAt(index);
+    });
+  }
+
+  void saveExistingHabit(int index){
+    setState(() {
+      todaysHabitList[index][0] = _newHabitNameController.text;
+    });
+    cancelAlertBox();
   }
 
   @override
@@ -63,7 +83,10 @@ class _HomePageState extends State<HomePage> {
               return HabitTile(
                   name: todaysHabitList[index][0],
                   completed: todaysHabitList[index][1],
-                  onChanged: (value) => checkBoxTapped(value, index));
+                  onChanged: (value) => checkBoxTapped(value, index),
+                  settingTapped: (context) => openHabitSetting(index),
+                  deleteTapped: (context) => deleteHabit(index),
+              );
             }));
   }
 }

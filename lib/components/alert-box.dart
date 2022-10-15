@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class EnterHabitName extends StatelessWidget {
+class AlertBox extends StatelessWidget {
   final controller;
   final Function() onSave;
   final Function() onCancel;
 
-  const EnterHabitName({
+  const AlertBox({
     Key? key,
     required this.controller,
     required this.onSave,
