@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:habit/components/alert-box.dart';
 import 'package:habit/components/floating_button.dart';
 import 'package:habit/components/habit_tile.dart';
+import 'package:habit/components/month_summary.dart';
 import 'package:habit/data/habit_db.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -19,7 +20,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-
     if(_myBox.get("CURRENT_HABIT_LIST")==null){
       db.createDefault();
     }else{
@@ -95,16 +95,26 @@ class _HomePageState extends State<HomePage> {
         floatingActionButton: FloatingButton(
           addHabit: createNewHabit,
         ),
-        body: ListView.builder(
-            itemCount: db.todaysHabitList.length,
-            itemBuilder: (context, index) {
-              return HabitTile(
-                  name: db.todaysHabitList[index][0],
-                  completed: db.todaysHabitList[index][1],
-                  onChanged: (value) => checkBoxTapped(value, index),
-                  settingTapped: (context) => openHabitSetting(index),
-                  deleteTapped: (context) => deleteHabit(index),
-              );
-            }));
+        body:
+          ListView(
+            children: [
+              MonthlySummary(datasets: db.heatMapDataSet, startDate: _myBox.get("START_DATE")),
+
+              ListView.builder(
+                shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: db.todaysHabitList.length,
+                  itemBuilder: (context, index) {
+                    return HabitTile(
+                      name: db.todaysHabitList[index][0],
+                      completed: db.todaysHabitList[index][1],
+                      onChanged: (value) => checkBoxTapped(value, index),
+                      settingTapped: (context) => openHabitSetting(index),
+                      deleteTapped: (context) => deleteHabit(index),
+                    );
+                  })
+            ],
+          ),
+    );
   }
 }
